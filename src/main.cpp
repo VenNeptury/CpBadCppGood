@@ -5,29 +5,35 @@
 
 bool responseOk(cpr::Response res);
 
+class ApiResponse
+{
+public:
+    std::string url;
+    std::string errorMessage;
+    int statusCode;
+    bool ok = true;
+    ApiResponse(cpr::Response res)
+    {
+        statusCode = res.status_code;
+        errorMessage = res.error.message;
+
+        if (statusCode > 299 || statusCode < 200)
+            ok = false;
+
+        auto json = nlohmann::json::parse(res.text);
+        if (json.contains("url"))
+            url = json["url"].get<std::string>();
+        else
+            ok = false;
+    }
+};
+
 int main(int argc, char **argv)
 {
-    auto res = cpr::Get(cpr::Url{"https://api.neko-chxn.xyz/v1/blush/img"});
+    auto resRaw = cpr::Get(cpr::Url{"https://api.neko-chxn.xyz/v1/blush/img"});
+    auto res = *new ApiResponse(resRaw);
 
-    if (responseOk(res))
-    {
-        auto json = nlohmann::json::parse(res.text);
-
-        auto img = cpr::Get(cpr::Url{json["url"].get<std::string>()});
-
-        std::ofstream file;
-
-        file.open("output.gif");
-        file << img.text;
-        file.close();
-
-        std::cout << "Done!\n";
-    }
-    else
-    {
-        std::cout << "Request failed.\n"
-                  << res.status_code << ": " << res.error.message << '\n';
-    }
+    std::cout << (res.ok ? "OK! " : "RIP! ") << res.statusCode << ": " << (res.ok ? res.url : res.errorMessage) << '\n';
 
     return 0;
 }
