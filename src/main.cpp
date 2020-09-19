@@ -1,5 +1,7 @@
 #include <iostream>
+#include <fstream>
 #include <cpr/cpr.h>
+#include <nlohmann/json.hpp>
 
 bool responseOk(cpr::Response res);
 
@@ -9,11 +11,21 @@ int main(int argc, char **argv)
 
     if (responseOk(res))
     {
-        std::cout << res.text << '\n';
+        auto json = nlohmann::json::parse(res.text);
+
+        auto img = cpr::Get(cpr::Url{json["url"].get<std::string>()});
+
+        std::ofstream file;
+
+        file.open("output.gif");
+        file << img.text;
+        file.close();
+
+        std::cout << "Done!\n";
     }
     else
     {
-        std::cout << "Response failed.\n"
+        std::cout << "Request failed.\n"
                   << res.status_code << ": " << res.error.message << '\n';
     }
 
