@@ -3,8 +3,6 @@
 #include <cpr/cpr.h>
 #include <nlohmann/json.hpp>
 
-bool responseOk(cpr::Response res);
-
 class ApiResponse
 {
 public:
@@ -30,15 +28,10 @@ public:
 
 int main(int argc, char **argv)
 {
-    auto resRaw = cpr::Get(cpr::Url{"https://api.neko-chxn.xyz/v1/blush/img"});
+    auto resRaw = cpr::Get(cpr::Url{"https://api.neko-chxn.xyz/v1/blush/img"}, cpr::VerifySsl(0));
     auto res = *new ApiResponse(resRaw);
 
     std::cout << (res.ok ? "OK! " : "RIP! ") << res.statusCode << ": " << (res.ok ? res.url : res.errorMessage) << '\n';
 
     return 0;
-}
-
-bool responseOk(cpr::Response res)
-{
-    return res.status_code < 300 && res.status_code > 199;
 }
