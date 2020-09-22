@@ -5,8 +5,9 @@
 #include "hash.hpp"
 #include "base64.hpp"
 
-std::string formatHelp(char *processName);
+const std::string formatHelp(char *processName);
 void die(std::string message, int exitCode = 0);
+void handleBase64(int argc, char **argv);
 
 int main(int argc, char **argv)
 {
@@ -26,42 +27,7 @@ int main(int argc, char **argv)
         break;
     case "base64"_:
     case "b64"_:
-    {
-        if (argc < 4)
-            die("Too little arguments!");
-
-        char *action = argv[2];
-        std::string rest;
-        if (argc == 4)
-            rest = argv[3];
-        else
-        {
-            std::ostringstream oss;
-            for (int i = 3; i < argc; i++)
-                oss << argv[i] << ' ';
-            rest = oss.str();
-        }
-
-        if (std::strcmp(action, "d") == 0)
-        {
-            std::string out;
-            std::string decodeRes = macaron::Base64::Decode(rest, out);
-            if (!decodeRes.empty())
-                die(decodeRes);
-            die(out);
-        }
-        else if (std::strcmp(action, "e") == 0)
-        {
-            die(macaron::Base64::Encode(rest));
-        }
-        else
-        {
-            std::ostringstream oss;
-            oss << "Invalid argument \"" << action << "\". Valid options: [e|d]";
-            die(oss.str(), 1);
-        }
-        break;
-    }
+        handleBase64(argc, argv);
     default:
     {
         std::ostringstream oss;
@@ -80,7 +46,7 @@ void die(std::string message, int exitCode)
     exit(exitCode);
 }
 
-std::string formatHelp(char *processName)
+const std::string formatHelp(char *processName)
 {
     std::ostringstream oss;
     oss << "usage:  " << processName << " <operation> [...]\noperations:";
@@ -88,4 +54,49 @@ std::string formatHelp(char *processName)
         oss << "\n\t" << processName << " " << line;
 
     return oss.str();
+}
+
+void handleBase64(int argc, char **argv)
+{
+    if (argc < 3)
+        die("Too few arguments!");
+
+    char *action = argv[2];
+    bool skippedAction = false;
+    std::string rest = "";
+    if (std::strcmp(action, "d") != 0 && std::strcmp(action, "e") != 0)
+    {
+        skippedAction = true;
+    }
+    else if (argc == 3)
+        die("Too few arguments!");
+
+    if (argc > (skippedAction ? 3 : 4))
+    {
+        std::ostringstream oss;
+        for (int i = skippedAction ? 2 : 3; i < argc; i++)
+            oss << argv[i] << ' ';
+        rest += oss.str();
+    }
+    else
+        rest += argv[argc - 1];
+
+    if (std::strcmp(action, "d") == 0)
+    {
+        std::string out;
+        std::string decodeRes = macaron::Base64::Decode(rest, out);
+        if (!decodeRes.empty())
+            die(decodeRes);
+        die(out);
+    }
+    else if (skippedAction || std::strcmp(action, "e") == 0)
+    {
+        die(macaron::Base64::Encode(rest));
+    }
+    else
+    {
+        std::ostringstream oss;
+        oss << "Invalid argument \"" << action << "\". Valid options: [e|d]";
+        die(oss.str(), 1);
+    }
 }
