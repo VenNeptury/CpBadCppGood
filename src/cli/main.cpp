@@ -1,6 +1,6 @@
 #include <iostream>
 #include <string>
-#include <string.h>
+#include <cstring>
 #include <sstream>
 #include "hash.hpp"
 #include "base64.hpp"
@@ -42,7 +42,7 @@ int main(int argc, char **argv)
             rest = oss.str();
         }
 
-        if (strcmp(action, "d") == 0)
+        if (std::strcmp(action, "d") == 0)
         {
             std::string out;
             std::string decodeRes = macaron::Base64::Decode(rest, out);
@@ -50,7 +50,7 @@ int main(int argc, char **argv)
                 die(decodeRes);
             die(out);
         }
-        else if (strcmp(action, "e") == 0)
+        else if (std::strcmp(action, "e") == 0)
         {
             die(macaron::Base64::Encode(rest));
         }
