@@ -78,6 +78,20 @@ void handleUri(int argc, char **argv)
 {
     if (argc < 1)
         die("Too few arguments!");
+
+    char *action = argv[0];
+    bool skippedAction = false;
+    if (std::strcmp(action, "d") != 0 && std::strcmp(action, "e") != 0)
+    {
+        skippedAction = true;
+    }
+    else if (argc == 1)
+        die("Too few arguments!");
+
+    std::string rest = joinArray(argv, argc, " ", skippedAction ? 0 : 1);
+    if (skippedAction || std::strcmp(action, "e") == 0)
+        die(encodeURIComponent(rest));
+    die(decodeURIComponent(rest));
 }
 
 void handleBase64(int argc, char **argv)
@@ -87,7 +101,7 @@ void handleBase64(int argc, char **argv)
 
     char *action = argv[0];
     bool skippedAction = false;
-    std::string rest = "";
+    std::string rest;
     if (std::strcmp(action, "d") != 0 && std::strcmp(action, "e") != 0)
     {
         skippedAction = true;
