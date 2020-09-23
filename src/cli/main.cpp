@@ -65,7 +65,7 @@ const std::string formatHelp(char *processName)
     oss << "usage:  " << processName << " <operation> [...]\noperations:";
     for (auto line : {
              "help",
-             "uri <text>",
+             "uri <[e]ncode|[e]decode> <text...>",
              "base64 <[e]ncode|[d]ecode> <text...>",
              "repeat <n> <text...>",
              "alternate <text...>"})
