@@ -3,7 +3,6 @@
 #include <cstring>
 #include <sstream>
 #include "uri_encode.hpp"
-#include "hash.hpp"
 #include "base64.hpp"
 #include "string_helpers.hpp"
 
