@@ -6,12 +6,13 @@
 #include "base64.hpp"
 #include "string_helpers.hpp"
 
-const std::string formatHelp(char *processName);
-void die(std::string message, int exitCode = 0);
+std::string formatHelp(char *processName);
+void die(const std::string &message, int exitCode = 0);
 void handleBase64(int argc, char **argv);
 void handleRepeat(int argc, char **argv);
 void handleAlternate(int argc, char **argv);
 void handleUri(int argc, char **argv);
+void handleGoogle(int argc, char **argv, bool img = false);
 
 int main(int argc, char **argv)
 {
@@ -34,11 +35,25 @@ int main(int argc, char **argv)
         die(formatHelp(argv[0]));
     case "uri"_:
         handleUri(argc, args);
+    case "google"_:
+        handleGoogle(argc, args);
+    case "googleimg"_:
+        handleGoogle(argc, args, true);
+    case "tweet"_:
+        if (!argc)
+            die("Too few arguments");
+        die("https://twitter.com/compose/tweet?text=" + encodeURIComponent(joinArray(args, argc)));
     case "base64"_:
     case "b64"_:
         handleBase64(argc, args);
     case "repeat"_:
         handleRepeat(argc, args);
+    case "reverse"_:
+    {
+        std::string input = joinArray(args, argc);
+        std::reverse(input.begin(), input.end());
+        die(input);
+    }
     case "alternate"_:
         handleAlternate(argc, args);
     default:
@@ -53,13 +68,13 @@ int main(int argc, char **argv)
     return 0;
 }
 
-void die(std::string message, int exitCode)
+void die(const std::string &message, int exitCode)
 {
     std::cout << message << '\n';
     exit(exitCode);
 }
 
-const std::string formatHelp(char *processName)
+std::string formatHelp(char *processName)
 {
     std::ostringstream oss;
     oss << "usage:  " << processName << " <operation> [...]\noperations:";
@@ -183,4 +198,11 @@ void handleAlternate(int argc, char **argv)
     }
 
     die(output);
+}
+
+void handleGoogle(int argc, char **argv, bool img)
+{
+    if (!argc)
+        die("Too few arguments");
+    die("https://www.google.com/search?" + std::string(img ? "tbm=isch&q=" : "q=") + encodeURIComponent(joinArray(argv, argc)));
 }
