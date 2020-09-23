@@ -62,7 +62,7 @@ const std::string formatHelp(char *processName)
 {
     std::ostringstream oss;
     oss << "usage:  " << processName << " <operation> [...]\noperations:";
-    for (auto line : {"help", "uri"})
+    for (auto line : {"help", "uri", "base64 <[e]ncode|[d]ecode> <text ...>", "repeat <n> <text...>", "alternate <text...>"})
         oss << "\n\t" << processName << " " << line;
 
     return oss.str();
