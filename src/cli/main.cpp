@@ -2,14 +2,17 @@
 #include <string>
 #include <cstring>
 #include <sstream>
+#include "uri_encode.hpp"
 #include "hash.hpp"
 #include "base64.hpp"
+#include "string_helpers.hpp"
 
 const std::string formatHelp(char *processName);
 void die(std::string message, int exitCode = 0);
 void handleBase64(int argc, char **argv);
 void handleRepeat(int argc, char **argv);
 void handleAlternate(int argc, char **argv);
+void handleUri(int argc, char **argv);
 
 int main(int argc, char **argv)
 {
@@ -31,8 +34,7 @@ int main(int argc, char **argv)
     case "help"_:
         die(formatHelp(argv[0]));
     case "uri"_:
-        std::cout << "URI!";
-        break;
+        handleUri(argc, args);
     case "base64"_:
     case "b64"_:
         handleBase64(argc, args);
@@ -65,12 +67,18 @@ const std::string formatHelp(char *processName)
     for (auto line : {
              "help",
              "uri <text>",
-             "base64 <[e]ncode|[d]ecode> <text ...>",
+             "base64 <[e]ncode|[d]ecode> <text...>",
              "repeat <n> <text...>",
              "alternate <text...>"})
         oss << "\n\t" << processName << " " << line;
 
     return oss.str();
+}
+
+void handleUri(int argc, char **argv)
+{
+    if (argc < 1)
+        die("Too few arguments!");
 }
 
 void handleBase64(int argc, char **argv)
@@ -90,10 +98,7 @@ void handleBase64(int argc, char **argv)
 
     if (argc > (skippedAction ? 1 : 2))
     {
-        std::ostringstream oss;
-        for (int i = skippedAction ? 0 : 1; i < argc; i++)
-            oss << argv[i] << ' ';
-        rest += oss.str();
+        rest += joinArray(argv, argc, " ", skippedAction ? 0 : 1);
     }
     else
         rest += argv[argc - 1];
@@ -133,13 +138,7 @@ void handleRepeat(int argc, char **argv)
         die("You did not provide a valid number for how many times the string should be repeated.");
     }
 
-    std::string sentence;
-    for (int i = 1; i < argc; i++)
-    {
-        sentence += argv[i];
-        if (i != argc - 1)
-            sentence += ' ';
-    }
+    std::string sentence = joinArray(argv, argc, " ", 1);
 
     std::string output;
     output.reserve(sentence.size() * times);
