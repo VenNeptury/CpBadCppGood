@@ -1,16 +1,22 @@
+#ifndef _STRING_HELPERS_H_
+#define _STRING_HELPERS_H_
+
 #include <string>
 #include <sstream>
 
-std::string joinArray(char **arr, uint size, std::string seperator = " ", int start = 0, int end = 0)
+const std::string joinArray(char **arr, int size, const std::string &seperator = " ", int start = 0, int end = -1)
 {
+    bool sepExists = !seperator.empty();
     std::ostringstream oss;
-    for (int i = start; i < (end != 0 ? end : size); i++)
+    for (int i = start; i < (end != -1 ? end : size); i++)
     {
         oss << arr[i];
-        if (!seperator.empty() && i != size - 1)
+        if (sepExists)
             oss << seperator;
     }
-    return oss.str();
+    std::string str{oss.str()};
+    str.pop_back();
+    return str;
 }
 
 constexpr unsigned int hash(const char *s, int off = 0)
@@ -21,3 +27,5 @@ constexpr unsigned int operator"" _(const char *p, size_t)
 {
     return hash(p);
 }
+
+#endif

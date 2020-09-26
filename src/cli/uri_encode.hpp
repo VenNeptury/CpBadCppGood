@@ -1,12 +1,12 @@
+#ifndef _ENCODE_H_
+#define _ENCODE_H_
+
 /*
 * Source: https://gist.github.com/arthurafarias/56fec2cd49a32f374c02d1df2b6c350f
 */
 
 #include <string>
 #include <regex>
-
-#ifndef ENCODE_H_
-#define ENCODE_H_
 
 std::string decodeURIComponent(std::string encoded)
 {

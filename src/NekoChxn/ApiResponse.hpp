@@ -1,3 +1,6 @@
+#ifndef _API_RESPONSE_H_
+#define _API_RESPONSE_H_
+
 #include <nlohmann/json.hpp>
 #include <string>
 
@@ -32,4 +35,6 @@ namespace nekochxn
             }
         }
     };
-}
+} // namespace nekochxn
+
+#endif
