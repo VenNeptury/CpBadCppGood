@@ -56,10 +56,12 @@ int main(int argc, char **argv)
     }
     case "alternate"_:
         handleAlternate(argc, args);
+    case "titlecase"_:
+        die(toTitleCase(joinArray(args, argc)));
     default:
     {
         std::ostringstream oss;
-        oss << "Invalid Input \"" << arg << "\" \n\n"
+        oss << "Invalid input \"" << arg << "\" \n\n"
             << formatHelp(argv[0]);
         die(oss.str(), 1);
     }
@@ -80,10 +82,14 @@ std::string formatHelp(char *processName)
     oss << "usage:  " << processName << " <operation> [...]\noperations:";
     for (auto line : {
              "help",
-             "uri <[e]ncode|[e]decode> <text...>",
              "base64 <[e]ncode|[d]ecode> <text...>",
+             "uri <[e]ncode|[e]decode> <text...>",
+             "google <text...>",
+             "googleimg <text...>",
+             "tweet <text...>",
              "repeat <n> <text...>",
-             "alternate <text...>"})
+             "alternate <text...>",
+             "titlecase <text...>"})
         oss << "\n\t" << processName << " " << line;
 
     return oss.str();

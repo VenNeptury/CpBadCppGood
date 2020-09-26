@@ -3,6 +3,7 @@
 
 #include <string>
 #include <sstream>
+#include <regex>
 
 const std::string joinArray(char **arr, int size, const std::string &seperator = " ", int start = 0, int end = -1)
 {
@@ -17,6 +18,46 @@ const std::string joinArray(char **arr, int size, const std::string &seperator =
     std::string str{oss.str()};
     str.pop_back();
     return str;
+}
+
+const std::string toLowerCase(std::string str)
+{
+    std::ostringstream oss;
+    for (auto &x : str)
+        oss << (islower(x) ? char(x) : char(tolower(x)));
+
+    std::string output = oss.str();
+    return output;
+}
+
+const std::string toUpperCase(std::string str)
+{
+    std::ostringstream oss;
+    for (auto &x : str)
+        oss << (isupper(x) ? char(x) : char(toupper(x)));
+
+    std::string output = oss.str();
+    return output;
+}
+
+const std::string toTitleCase(std::string str, char seperator = ' ')
+{
+    using namespace std;
+    istringstream iss(str);
+    ostringstream oss;
+    string segment;
+
+    while (getline(iss, segment, seperator))
+    {
+        if (segment.empty())
+            continue;
+
+        oss << toUpperCase({segment[0]}) << toLowerCase(segment.substr(1)) << seperator;
+    }
+    segment = oss.str();
+    segment.pop_back();
+
+    return segment;
 }
 
 constexpr unsigned int hash(const char *s, int off = 0)
